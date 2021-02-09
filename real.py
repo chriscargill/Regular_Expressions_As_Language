@@ -1,60 +1,72 @@
 import re
 
-reg_exp = "\D.a\w"
-test_string = r"""This is a simple test for regular expressoins 435985ab t3 (*(*#%(**W%(U*(%U(*#@'''""WU%(!!@)))))))."""
-matched = re.findall(reg_exp, test_string)
-print(matched)
-
-# If the expression is not found, return the expression
-
-
-
-
-# convert from REAL to regex
+# Convert from REAL to regex
 re_dict = {
     "anything":".",
     "alphaNum":"\w",
-
+    "nonAlphaNum":"\W",
+    "digit":"\d",
+    "nonDigit":"\D",
+    "whitespaceChar":"\s",
+    "nonWhitespaceChar":"\S"
 }
 
-def regex(expression): # To regex
-    return re_dict.get(expression, expression)
+def toRegex(expression): # To regex
+    regex_list = []
+    slash_before = False
+    list_of_words = expression.split(" ")
+    for word in list_of_words:
+        regex_list.append(re_dict.get(word, word)) # If the expression is not found, return the expression
+    return "".join(regex_list)
 
-
-
-###### ######
-
-
-
-# convert from regex to REAL
+# Convert from regex to REAL
 real_dict = {
     ".":"anything",
     "\w":"alphaNum",
+    "\W":"nonAlphaNum",
     "\d":"digit",
     "\D":"nonDigit",
-
-
+    "\s":"whitespaceChar",
+    "\S":"NonWhitespaceChar"
 }
 
-def real(expression): # To real 
+def toReal(expression): # To REAL 
     real_list = []
     slash_before = False
     for character in expression:
+
         ### Handle backslashes(\)
-        if character == "\\":
+        if character == "\\" and slash_before: # If this character is a slash and the one before was also a slash
+            transmuted = real_dict.get("\\\\", "\\\\")
+            slash_before = False
+
+        elif character == "\\": # If only the previous character is a slash
             slash_before = True
+            
         else:
             if slash_before:
                 transmuted = real_dict.get("\\" + character, "\\" + character)
                 real_list.append(transmuted)
                 slash_before = False
+
             else:
-                transmuted = real_dict.get(character, character)
+                transmuted = real_dict.get(character, character) # If the expression is not found, return the expression
                 real_list.append(transmuted)
+
     return_string = " ".join(real_list)
     return return_string
 
-test_string = r"""This is a simple test for regular expressoins 435985 t3 (*(*#%(**W%(U*(%U(*#@'''""WU%(!!@)))))))."""
+if __name__ == "__main__":
+    # Test the functionality of the functions
+    reg_exp = "\D.a\w\d#\s\w"
+    print(reg_exp)
+    test_string = r"""This is a simple test for regular2# expressoins 435985ab t3 (*(*#%(**W%(U*(%U(*#@'''""WU%(!!@)))))))."""
+    matched = re.findall(reg_exp, test_string)
+    print(matched)
 
-real_string = real(reg_exp)
-print(real_string)
+    real_string = toReal(reg_exp)
+    print(real_string)
+    regex_string = toRegex(real_string)
+    print(regex_string)
+
+    assert(regex_string == reg_exp)
