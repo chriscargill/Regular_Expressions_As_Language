@@ -1,4 +1,6 @@
 import re
+# TODO Handle what gets written when special characters are used within a character class
+# TODO Error out/return an error if the closing bracket is missing
 
 # Convert from REAL to regex
 re_dict = {
@@ -8,7 +10,10 @@ re_dict = {
     "digit":"\d",
     "nonDigit":"\D",
     "whitespaceChar":"\s",
-    "nonWhitespaceChar":"\S"
+    "nonWhitespaceChar":"\S",
+    "characterClass":"[",
+    "characterClassEnd":"]",
+    "not":"^",
 }
 
 def toRegex(expression): # To regex
@@ -27,7 +32,10 @@ real_dict = {
     "\d":"digit",
     "\D":"nonDigit",
     "\s":"whitespaceChar",
-    "\S":"NonWhitespaceChar"
+    "\S":"nonWhitespaceChar",
+    "[":"characterClass",
+    "]":"characterClassEnd",
+    "^":"not",
 }
 
 def toReal(expression): # To REAL 
@@ -58,9 +66,14 @@ def toReal(expression): # To REAL
 
 if __name__ == "__main__":
     # Test the functionality of the functions
-    reg_exp = "\D.a\w\d#\s\w"
+    reg_exp = "[A-Z^$.]"
     print(reg_exp)
-    test_string = r"""This is a simple test for regular2# expressoins 435985ab t3 (*(*#%(**W%(U*(%U(*#@'''""WU%(!!@)))))))."""
+    test_string = r"""
+    This is a simple test for regular2#
+    expressions 435^985ab t3 (*($$*#%(**
+    W%(U$*(%U(*#@'''""WU%(!!@))))))).
+    still a number 443-551
+    """
     matched = re.findall(reg_exp, test_string)
     print(matched)
 
@@ -70,3 +83,8 @@ if __name__ == "__main__":
     print(regex_string)
 
     assert(regex_string == reg_exp)
+
+    print("\n")
+    my_regex = toRegex("digit digit nonDigit")
+    matched_strings = re.findall(my_regex, test_string)
+    print(matched_strings)
