@@ -1,6 +1,8 @@
 import re
 # TODO Handle what gets written when special characters are used within a character class
 # TODO Error out/return an error if the closing bracket is missing
+# Perhaps I'll have different dictionaries for different specialties
+# One dict for special cases, one for repetition cases, one for grouping cases, etc
 
 # Convert from REAL to regex
 re_dict = {
@@ -14,6 +16,10 @@ re_dict = {
     "characterClass":"[",
     "characterClassEnd":"]",
     "not":"^",
+    "zeroPlus":"*",
+    "onePlus":"+",
+    "zeroOrOne":"?",
+    "or":",",
 }
 
 def toRegex(expression): # To regex
@@ -36,6 +42,10 @@ real_dict = {
     "[":"characterClass",
     "]":"characterClassEnd",
     "^":"not",
+    "*":"zeroPlus",
+    "+":"onePlus",
+    "?":"zeroOrOne",
+    ",":"or",
 }
 
 def toReal(expression): # To REAL 
@@ -66,11 +76,11 @@ def toReal(expression): # To REAL
 
 if __name__ == "__main__":
     # Test the functionality of the functions
-    reg_exp = "[A-Z^$.]"
+    reg_exp = "(?:a{3})"
     print(reg_exp)
     test_string = r"""
     This is a simple test for regular2#
-    expressions 435^985ab t3 (*($$*#%(**
+    expressions 435^985ab t3 aaa (*($$*#%(**
     W%(U$*(%U(*#@'''""WU%(!!@))))))).
     still a number 443-551
     """
